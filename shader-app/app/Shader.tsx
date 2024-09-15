@@ -92,11 +92,16 @@ const Shader: React.FC<IShaderProps> = ({ width, height, vertexShaderSource, fra
     //Get uniform location for time
     const timeLocation = gl.getUniformLocation(program, 'uTime');
     if (!timeLocation) {
-      console.error('Time uniform location not found');
-      return;
+      console.warn('Time uniform location not found');
+     // return;
     }
- //Get uniform locations
+
+    //Get uniform locations
     const resolutionLocation = gl.getUniformLocation(program, 'uResolution');
+    if (!resolutionLocation) {
+      console.warn('Resolution uniform location not found');
+     // return; it feels like when things are not used in the shader, they are not compiled so the get fails
+    }
 
     // Set canvas resolution
     gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
