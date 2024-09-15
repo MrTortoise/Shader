@@ -72,19 +72,32 @@ void main() {
 // Fragment Shader
 const zoomeyFragmentShaderSource = `  
 precision mediump float;
+
 varying vec2 vTexCoord;
+
 uniform vec2 uResolution;
 uniform float uTime;
+
+vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
+{
+    return a + b*cos( 6.28318*(c*t+d) );
+}
 
 void main() {
     vec2 uv = gl_FragCoord.xy / uResolution.xy * 2. -1.;    
     uv.x *= uResolution.x / uResolution.y;
-    float d = length(uv);
+
+     float d = length(uv);
+
+    vec3 color = palette(d+uTime, vec3(-0.122, 0.508, 0.328),vec3(1.538, 0.388, 0.348),vec3(1.898, 0.828, 0.709),vec3(7.562, 1.998, 4.507));
+   
     d=sin(d*10.-uTime)/10.;
     d=abs(d);
-    d = smoothstep(0.0,0.2,d);
-    float color = 0.5 + 0.5 * abs(sin(uTime + vTexCoord.x * 10.0));
-    gl_FragColor = vec4(d,d, d, 1.0);         
+    d = 0.01/d;
+
+     color *= d;
+    
+    gl_FragColor = vec4(color, 1.0);         
 }
 `;
 
