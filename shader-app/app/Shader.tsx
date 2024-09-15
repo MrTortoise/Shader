@@ -31,12 +31,11 @@ const Shader: React.FC = () => {
     const webGlTutorialFragmentShader = `  
         precision mediump float;
         varying vec2 vTexCoord;
+        uniform float uTime;
 
         void main() {
-            // Use the position to determine color
-            vec3 color = vec3(vTexCoord / 100.0, 0.5); // Simple color based on position
-            // gl_FragColor = vec4(color, 1.0);
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            float color = 0.5 + 0.5 * sin(uTime + vTexCoord.x * 10.0);
+            gl_FragColor = vec4(color, color, color, 1.0);         
         }
 
     `;
@@ -111,16 +110,26 @@ const Shader: React.FC = () => {
       gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(positionLocation);
   
+      // Get uniform location for time
+      const timeLocation = gl.getUniformLocation(program, 'uTime');
+      if (!timeLocation) {
+        console.error('Time uniform location not found');
+        return;
+      }
       // Get uniform locations
       const resolutionLocation = gl.getUniformLocation(program, 'uResolution');
   
       // Set canvas resolution
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
 
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 2);
+      const render = (time: number) => {
+        gl.uniform1f(timeLocation, time * 0.001);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 2);
+        requestAnimationFrame(render);
+      }
+
+      requestAnimationFrame(render);
   }, []);
 
   return <canvas ref={canvasRef} width={800} height={600} style={{ width: '100%', height: 'auto' }} />;
