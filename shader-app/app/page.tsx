@@ -47,9 +47,13 @@ uniform float uTime;
 
 void main() {
     vec2 uv = gl_FragCoord.xy / uResolution.xy * 2. -1.;    
+    uv.x *= uResolution.x / uResolution.y;
     float d = length(uv);
+    d=sin(d*10.)/10.;
+    d=abs(d);
+    d = smoothstep(0.0,0.2,d);
     float color = 0.5 + 0.5 * abs(sin(uTime + vTexCoord.x * 10.0));
-    gl_FragColor = vec4(d,0., 0., 1.0);         
+    gl_FragColor = vec4(d,-d, 0., 1.0);         
 }
 
 `;
