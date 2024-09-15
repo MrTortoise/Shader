@@ -364,8 +364,8 @@ void main() {
   //  }
 
     float d = sdEquilateralTriangle(uv, 0.5);
-    vec3 color = palette(length(uv0), vec3(-0.122, 0.508, 0.328),vec3(1.538, 0.388, 0.348),vec3(1.898, 0.828, 0.709),vec3(7.562, 1.998, 4.507));
-    fc = vec3(1.0) * d;
+    vec3 color = palette(d, vec3(-0.122, 0.508, 0.328),vec3(1.538, 0.388, 0.348),vec3(1.898, 0.828, 0.709),vec3(7.562, 1.998, 4.507));
+    fc = color ;
     gl_FragColor = vec4(fc, 1.0);         
 }
 `;
