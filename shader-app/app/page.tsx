@@ -26,6 +26,37 @@ void main() {
 
 `;
 
+const SplittingRingsVertexShaderSource = `
+attribute vec2 aPosition;
+varying vec2 vTexCoord;
+
+void main() {
+    // Pass through the position and set texture coordinates
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+    vTexCoord = (aPosition + vec2(1.0)) / 2.0; // Convert to [0, 1] range for texture coordinates
+}
+
+`
+
+// Fragment Shader
+const splittingRingsFragmentShaderSource = `  
+precision mediump float;
+varying vec2 vTexCoord;
+uniform vec2 uResolution;
+uniform float uTime;
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / uResolution.xy * 2. -1.;    
+    uv.x *= uResolution.x / uResolution.y;
+    float d = length(uv);
+    d=sin(d*10.)/10.;
+    d=abs(d);
+    d = smoothstep(0.0,0.2,d);
+    float color = 0.5 + 0.5 * abs(sin(uTime + vTexCoord.x * 10.0));
+    gl_FragColor = vec4(d,sin(d*uTime*4.), d, 1.0);         
+}
+`;
+
 const zoomeyVertexShaderSource = `
 attribute vec2 aPosition;
 varying vec2 vTexCoord;
@@ -49,20 +80,20 @@ void main() {
     vec2 uv = gl_FragCoord.xy / uResolution.xy * 2. -1.;    
     uv.x *= uResolution.x / uResolution.y;
     float d = length(uv);
-    d=sin(d*10.)/10.;
+    d=sin(d*10.-uTime)/10.;
     d=abs(d);
     d = smoothstep(0.0,0.2,d);
     float color = 0.5 + 0.5 * abs(sin(uTime + vTexCoord.x * 10.0));
-    gl_FragColor = vec4(d,sin(d*uTime*4.), d, 1.0);         
+    gl_FragColor = vec4(d,d, d, 1.0);         
 }
-
 `;
 
 export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Shader width={1600} height={1200} vertexShaderSource={zoomeyVertexShaderSource} fragmentShaderSource={zoomeyFragmentShaderSource} />
+      <Shader width={1600} height={1200} vertexShaderSource={zoomeyVertexShaderSource} fragmentShaderSource={zoomeyFragmentShaderSource} />
+        <Shader width={1600} height={1200} vertexShaderSource={SplittingRingsVertexShaderSource} fragmentShaderSource={splittingRingsFragmentShaderSource} />
         <Shader width={800} height={600} vertexShaderSource={webGlTutorialVertexShader} fragmentShaderSource={webGlTutorialFragmentShader} />
 
       </main>
