@@ -365,7 +365,10 @@ void main() {
 
     float d = sdEquilateralTriangle(uv, 0.5);
     vec3 color = palette(d, vec3(-0.122, 0.508, 0.328),vec3(1.538, 0.388, 0.348),vec3(1.898, 0.828, 0.709),vec3(7.562, 1.998, 4.507));
-    fc = color ;
+    d=sin(d*7.-uTime)/7.;
+    d=abs(d);
+    d =pow( (0.01)/d,1.2);
+    fc = color *d;
     gl_FragColor = vec4(fc, 1.0);         
 }
 `;
