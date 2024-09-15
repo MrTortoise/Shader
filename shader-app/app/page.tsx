@@ -53,7 +53,7 @@ void main() {
     d=abs(d);
     d = smoothstep(0.0,0.2,d);
     float color = 0.5 + 0.5 * abs(sin(uTime + vTexCoord.x * 10.0));
-    gl_FragColor = vec4(d,-d, 0., 1.0);         
+    gl_FragColor = vec4(d,sin(d*uTime*4.), d, 1.0);         
 }
 
 `;
