@@ -46,9 +46,10 @@ uniform vec2 uResolution;
 uniform float uTime;
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / uResolution.xy;
-    float color = 0.5 + 0.5 * sin(uTime + vTexCoord.x * 10.0);
-    gl_FragColor = vec4(uv.x, 0., 0., 1.0);         
+    vec2 uv = gl_FragCoord.xy / uResolution.xy * 2. -1.;    
+    float d = length(uv);
+    float color = 0.5 + 0.5 * abs(sin(uTime + vTexCoord.x * 10.0));
+    gl_FragColor = vec4(d,0., 0., 1.0);         
 }
 
 `;
@@ -57,7 +58,7 @@ export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Shader width={800} height={600} vertexShaderSource={zoomeyVertexShaderSource} fragmentShaderSource={zoomeyFragmentShaderSource} />
+        <Shader width={1600} height={1200} vertexShaderSource={zoomeyVertexShaderSource} fragmentShaderSource={zoomeyFragmentShaderSource} />
         <Shader width={800} height={600} vertexShaderSource={webGlTutorialVertexShader} fragmentShaderSource={webGlTutorialFragmentShader} />
 
       </main>
