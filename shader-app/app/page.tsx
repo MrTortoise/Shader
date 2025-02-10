@@ -363,20 +363,74 @@ void main() {
   //       fc += color*d;       
   //  }
 
-    float d = sdEquilateralTriangle(uv, 0.5);
+  for(float i=0.0;i<5.0;i++){    
+    uv = fract(-uv*1.66)-0.5;
+    float d = sdEquilateralTriangle(uv, 0.68)*2.-1.;
     vec3 color = palette(d, vec3(-0.122, 0.508, 0.328),vec3(1.538, 0.388, 0.348),vec3(1.898, 0.828, 0.709),vec3(7.562, 1.998, 4.507));
     d=sin(d*7.-uTime)/7.;
     d=abs(d);
     d =pow( (0.01)/d,1.2);
-    fc = color *d;
+    fc += color *d;
+}
     gl_FragColor = vec4(fc, 1.0);         
 }
 `;
 
+const goatFragmentShaderSource = `
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform float uTime;
+uniform vec2 uResolution;
+
+// Function to create circular shapes representing "hoof taps"
+float circle(vec2 uv, vec2 position, float radius) {
+    float dist = length(uv - position);
+    return smoothstep(radius, radius - 0.01, dist);
+}
+
+void main() {
+    vec2 uv = gl_FragCoord.xy / uResolution.xy;
+    uv = uv * 2.0 - 1.0; // Normalize coordinates
+    uv.x *= uResolution.x / uResolution.y;
+
+    // Background color - a playful gradient
+    vec3 backgroundColor = vec3(0.5 + 0.5 * sin(uTime * 0.5), 0.8, 0.9);
+    
+    // Define "tap" positions to simulate goat's tapdancing hooves
+    vec2 leftHoofPos = vec2(-0.5 + 0.1 * sin(uTime * 5.0), -0.3 + 0.2 * cos(uTime * 5.0));
+    vec2 rightHoofPos = vec2(0.5 + 0.1 * sin(uTime * 5.0 + 3.14), -0.3 + 0.2 * cos(uTime * 5.0 + 3.14));
+    
+    // Create circles for hooves
+    float leftHoof = circle(uv, leftHoofPos, 0.1);
+    float rightHoof = circle(uv, rightHoofPos, 0.1);
+    
+    // Tap effect: Flashing intensity based on time to mimic "tapping"
+    float tapFlash = abs(sin(uTime * 10.0));
+
+    // Hoof color (using a lively red for energy)
+    vec3 hoofColor = vec3(0.9, 0.1, 0.1) * tapFlash;
+
+    // Combine hoofs and background
+    vec3 color = backgroundColor;
+    color = mix(color, hoofColor, leftHoof);
+    color = mix(color, hoofColor, rightHoof);
+    
+    // Add a shadow to the hooves for a sense of dimension
+    float shadow = smoothstep(0.15, 0.13, length(uv - leftHoofPos)) + 
+                   smoothstep(0.15, 0.13, length(uv - rightHoofPos));
+    color -= vec3(0.1) * shadow;
+
+    // Final output
+    gl_FragColor = vec4(color, 1.0);
+}
+`
 export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+      <Shader width={1600} height={1200} vertexShaderSource={fractalVertexShaderSource} fragmentShaderSource={goatFragmentShaderSource} />
       <Shader width={1600} height={1200} vertexShaderSource={fractalVertexShaderSource} fragmentShaderSource={trianglefractalFragmentShaderSource} />
       <Shader width={1600} height={1200} vertexShaderSource={fractalVertexShaderSource} fragmentShaderSource={paisleyFragmentShaderSource} />
       <Shader width={1600} height={1200} vertexShaderSource={fractalVertexShaderSource} fragmentShaderSource={fractalFragmentShaderSource} />
